@@ -45,4 +45,3 @@ def valueFromBLOSUM(i1,i2):
 for i1 in range(length):
     for i2 in range(length):
         score[i1][i2]=max(score[i1-1][i2]+GAP,score[i1][i2-1]+GAP,valueFromBLOSUM(i1,i2))
-        
