@@ -5,7 +5,7 @@
 #define maxlen 100
 using namespace std;
 
-int score[256][256], DP[maxlen][maxlen], d, len1, len2;
+int score[256][256], d, DP[maxlen][maxlen], len1, len2;
 char S1[maxlen], S2[maxlen], wayY[maxlen], wayX[maxlen];
 
 void Initialization (void) {
@@ -63,18 +63,17 @@ void Print (int n) {
     printf("\n");
 }
 void Search (int n, int y, int x) {
-    if (y < 0 || x < 0) return;
     wayY[n] = y;
     wayX[n] = x;
     if (y == 0 && x == 0) {
         Print(n);
         return;
     }
-    if(DP[y][x] == DP[y - 1][x] - d)
+    if(y > 0 && DP[y][x] == DP[y - 1][x] - d)
         Search( n + 1, y - 1, x);
-    if(DP[y][x] == DP[y][x - 1] - d)
+    if(x > 0 && DP[y][x] == DP[y][x - 1] - d)
         Search( n + 1, y, x - 1);
-    if(DP[y][x] == DP[y - 1][x - 1] + score[S1[y]][S2[x]])
+    if(y > 0 && x > 0 && DP[y][x] == DP[y - 1][x - 1] + score[S1[y]][S2[x]])
         Search( n + 1, y - 1, x - 1);
 }
 main (void) {
