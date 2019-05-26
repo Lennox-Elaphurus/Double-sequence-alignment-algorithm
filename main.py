@@ -18,15 +18,15 @@ This just an example , not a direct input
 ['D', '-4', '-1', '-1', '-2', '-4', '7']
 """
 # read two sequence
-sequence1 ="IPGAWD" #"AAAAA"
+sequence1 ="AAAAA" #"IPGAWD"
 # sequence1=input("Please input the first sequence:")
+sequence1="0"+sequence1
 print("sequence1:", sequence1)
-# sequence1="0"+sequence1
 
 # sequence2=input("Please input the second sequence:")
-sequence2 = "VGAWAD"# "AAA"
+sequence2 = "AAAA"# "VGAWAD"
+sequence2="0"+sequence2
 print("sequence2:", sequence2)
-# sequence2="0"+sequence2
 # finish reading two sequence
 # build score matrix
 GAP = -8
@@ -34,7 +34,7 @@ score = [[0 for i in range(len(sequence1))] for i in range(len(sequence2))]
 # use a 4-D list to represent whether two node are connected
 connectivity= [[[[False for i in range(len(sequence1))] for i in range(len(sequence2))] for i in range(len(sequence1))] for i in range(len(sequence2))]
 # initialize score matrix
-score[0][0]= 0
+score[0][0]= 0# debugging
 for i in range(1, len(sequence2)):
     score[i][0]= score[i-1][0]+GAP
     connectivity[i][0][i-1][0]= True
@@ -80,9 +80,13 @@ for i1 in range(1, len(sequence2)):
         if score[i1][i2] == valueFromBLOSUM(i1, i2):
             connectivity[i1][i2][i1-1][i2-1]= True
             connectivity[i1-1][i2-1][i1][i2]= True
-# print(connextivity)
-# for i in range(NumOfLines):
-#     print(connextivity)
+# print connectivity
+for i1 in range(len(sequence2)):
+    for i2 in range(len(sequence1)):
+        for i3 in range(len(sequence2)):
+            for i4 in range(len(sequence1)):
+                if connectivity[i1][i2][i3][i4]is True:
+                    print("(",i1,",",i2,"),(",i3,",",i4,")","connected.")
 # finish creating the score matrix
 methodCnt= 0
 
