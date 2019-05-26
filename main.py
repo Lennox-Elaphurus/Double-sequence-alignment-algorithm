@@ -18,43 +18,48 @@ This just an example , not a direct input
 ['D', '-4', '-1', '-1', '-2', '-4', '7']
 """
 # read two sequence
-# sequence1=input("Please input the first sequence:")
 sequence1 = "IPGAWD"
+# sequence1=input("Please input the first sequence:")
 print("sequence1:", sequence1)
+sequence1="0"+sequence1
+
 # sequence2=input("Please input the second sequence:")
 sequence2 = "VGAWAD"
 print("sequence2:", sequence2)
+sequence2="0"+sequence2
 # finish reading two sequence
 # build score matrix
 GAP = -8
-score = [[0 for i in range(NumOfElements)] for i in range(NumOfLines)]
-for i in range(NumOfLines):
-    if(i is not 1):
-        score[i][0] = score[i-1][0]+GAP
-        score[0][i] = score[0][i-1]+GAP
-    else:
-        score[0][0] = 0
-        score[1][0] = GAP
-        score[0][1] = GAP
-# print(score)
-
+score = [[0 for i in range(len(sequence1))] for i in range(len(sequence2))]
+# use a 4-D list to represent whether two node are connected
+connectivity= [[[[False for i in range(len(sequence1))] for i in range(len(sequence2))] for i in range(len(sequence1))] for i in range(len(sequence2))]
+# initialize score matrix
+score[0][0]= 0
+for i in range(1, len(sequence2)):
+    score[i][0]= score[i-1][0]+GAP
+    connectivity[i][0][i-1][0]= True
+    connectivity[i-1][0][i][0]= True
+for i in range(1, len(sequence1)):
+    score[0][i]= score[0][i-1]+GAP
+    connectivity[0][i][0][i-1]= True
+    connectivity[0][i-1][0][i]= True
 
 def valueFromBLOSUM(i1, i2):
     global score
     global BLOSUM
     global sequence1
     global sequence2
-    charX = sequence1[i1]   # the key to find the value
-    charY = sequence2[i2]   # the key to find the value
-    index1 = -1   # the index of char in BLOSUM
-    index2 = -1   # the index of char in BLOSUM
+    charX= sequence1[i1]   # the key to find the value
+    charY= sequence2[i2]   # the key to find the value
+    index1= -1   # the index of char in BLOSUM
+    index2= -1   # the index of char in BLOSUM
     # find the corresponding index of char
     for i in range(NumOfLines):
         if BLOSUM[i][0] == charY:
-            index2 = i
+            index2= i
     for i in range(NumOfElements):
         if BLOSUM[0][i] == charX:
-            index1 = i
+            index1= i
     if index1 == -1 or index2 == -1:
         print("Error: can't find the value in BLOSUM matrix of :",
               charX, " ", charY, ".")
@@ -62,61 +67,60 @@ def valueFromBLOSUM(i1, i2):
     return float(BLOSUM[index2][index1])
 
 
-# use a 4-D list to represent whether two node are connected
-connextivity = [[[[False for i in range(NumOfElements)] for i in range(
-    NumOfLines)] for i in range(NumOfElements)] for i in range(NumOfLines)]
-for i1 in range(NumOfLines):
-    for i2 in range(NumOfLines):
-        score[i1][i2] = max(score[i1-1][i2]+GAP, score[i1]
+for i1 in range(1, len(sequence2)):
+    for i2 in range(1, len(sequence1)):
+        score[i1][i2]= max(score[i1-1][i2]+GAP, score[i1]
                             [i2-1]+GAP, valueFromBLOSUM(i1, i2))
         if score[i1][i2] == score[i1-1][i2]+GAP:
-            connextivity[i1][i2][i1-1][i2] = True
-            connextivity[i1-1][i2][i1][i2] = True
+            connectivity[i1][i2][i1-1][i2]= True
+            connectivity[i1-1][i2][i1][i2]= True
         if score[i1][i2] == score[i1][i2-1]+GAP:
-            connextivity[i1][i2][i1][i2-1] = True
-            connextivity[i1][i2-1][i1][i2] = True
+            connectivity[i1][i2][i1][i2-1]= True
+            connectivity[i1][i2-1][i1][i2]= True
         if score[i1][i2] == valueFromBLOSUM(i1, i2):
-            connextivity[i1][i2][i1-1][i2-1] = True
-            connextivity[i1-1][i2-1][i1][i2] = True
+            connectivity[i1][i2][i1-1][i2-1]= True
+            connectivity[i1-1][i2-1][i1][i2]= True
 # print(connextivity)
+# for i in range(NumOfLines):
+#     print(connextivity)
 # finish creating the score matrix
+methodCnt= 0
 
-methodCnt = 0
 
-
-def printAnswer(i1, i2, pathX, pathY, situation):
+def printAnswer(i1, i2, pathX, pathY):
+    # print("i1:", i1, " i2:", i2)
+    # print(pathX)
+    # print(pathY)
     global score
     global BLOSUM
     global sequence1
     global sequence2
-    global connextivity
     global methodCnt
-    if situation == 2:  # from diag
-        pathX.insert(0,sequence1[i1])
-        pathY.insert(0,sequence2[i2])
-    if situation == 1:  # from left
-        pathX.insert(0,sequence1[i1])
-        pathY.insert(0,"-")
-    if situation == 3:  # from up
-        pathX.insert(0,"-")
-        pathY.insert(0,sequence2[i2])
+    for i3 in range(len(sequence2)):
+        for i4 in range(len(sequence1)):
+            if connectivity[i1][i2][i3][i4] == True and i3 <= i1 and i4 <= i2:
+                if i3 == i1-1 and i4 == i2-1:  # come from diag
+                    pathX.insert(0, sequence1[i1])
+                    pathY.insert(0, sequence2[i2])
+                    # printAnswer(i3, i4, pathX.copy(), pathY.copy())
+                elif i3 == i1 and i4 == i2-1:   # from up
+                    pathX.insert(0, "-")
+                    pathY.insert(0, sequence2[i2])
+                    # printAnswer(i3, i4, pathX.copy(), pathY.copy())
+                elif i3 == i1-1 and i4 == i2:   # from left
+                    pathX.insert(0, sequence1[i1])
+                    pathY.insert(0, "-")
+                else:
+                    print("Error: didn't find the last element.")
+                printAnswer(i3, i4, pathX.copy(), pathY.copy())
     if i1 == 0 and i2 == 0:
-        print("Here is the method NO.", methodCnt, ".")
+        print("Here is the method NO.", methodCnt+1, ":")
         print(pathX)
         print(pathY)
-        methodCnt = methodCnt+1
-    else:
-        for i3 in range(NumOfLines):
-            for i4 in range(NumOfElements):
-                if connextivity[i1][i2][i3][i4] == True and i3<=i1 and i4<=i2:
-                    if i1 == i1-1 and i4 == i2-1:  # come from diag
-                        printAnswer(i3, i4, pathX.copy(), pathY.copy(), 2)
-                    elif i3 == i1 and i4 == i2-1:
-                        printAnswer(i3, i4, pathX.copy(), pathY.copy(), 1)
-                    else:
-                        printAnswer(i3, i4, pathX.copy(), pathY.copy(), 3)
+        methodCnt= methodCnt+1
 
 
-pathX = []
-pathY = []
-printAnswer(len(sequence1)-1, len(sequence2)-1, pathX.copy(), pathY.copy(), 2)
+pathX= []
+pathY= []
+printAnswer(len(sequence1)-1, len(sequence2)-1, pathX.copy(), pathY.copy())
+i = 0
