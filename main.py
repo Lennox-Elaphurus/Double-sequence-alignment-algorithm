@@ -18,15 +18,15 @@ This just an example , not a direct input
 ['D', '-4', '-1', '-1', '-2', '-4', '7']
 """
 # read two sequence
-sequence1 = "IPGAWD"
+sequence1 ="IPGAWD" #"AAAAA"
 # sequence1=input("Please input the first sequence:")
 print("sequence1:", sequence1)
-sequence1="0"+sequence1
+# sequence1="0"+sequence1
 
 # sequence2=input("Please input the second sequence:")
-sequence2 = "VGAWAD"
+sequence2 = "VGAWAD"# "AAA"
 print("sequence2:", sequence2)
-sequence2="0"+sequence2
+# sequence2="0"+sequence2
 # finish reading two sequence
 # build score matrix
 GAP = -8
@@ -49,8 +49,8 @@ def valueFromBLOSUM(i1, i2):
     global BLOSUM
     global sequence1
     global sequence2
-    charX= sequence1[i1]   # the key to find the value
-    charY= sequence2[i2]   # the key to find the value
+    charX= sequence1[i2]   # the key to find the value
+    charY= sequence2[i1]   # the key to find the value
     index1= -1   # the index of char in BLOSUM
     index2= -1   # the index of char in BLOSUM
     # find the corresponding index of char
@@ -88,9 +88,9 @@ methodCnt= 0
 
 
 def printAnswer(i1, i2, pathX, pathY):
-    # print("i1:", i1, " i2:", i2)
-    # print(pathX)
-    # print(pathY)
+    print("i1:", i1, " i2:", i2)
+    print(pathX)
+    print(pathY)
     global score
     global BLOSUM
     global sequence1
@@ -100,16 +100,16 @@ def printAnswer(i1, i2, pathX, pathY):
         for i4 in range(len(sequence1)):
             if connectivity[i1][i2][i3][i4] == True and i3 <= i1 and i4 <= i2:
                 if i3 == i1-1 and i4 == i2-1:  # come from diag
-                    pathX.insert(0, sequence1[i1])
-                    pathY.insert(0, sequence2[i2])
+                    pathX.insert(0, sequence1[i2])
+                    pathY.insert(0, sequence2[i1])
                     # printAnswer(i3, i4, pathX.copy(), pathY.copy())
-                elif i3 == i1 and i4 == i2-1:   # from up
-                    pathX.insert(0, "-")
-                    pathY.insert(0, sequence2[i2])
-                    # printAnswer(i3, i4, pathX.copy(), pathY.copy())
-                elif i3 == i1-1 and i4 == i2:   # from left
-                    pathX.insert(0, sequence1[i1])
+                elif i3 == i1 and i4 == i2-1:   # from left
+                    pathX.insert(0, sequence1[i2])
                     pathY.insert(0, "-")
+                    # printAnswer(i3, i4, pathX.copy(), pathY.copy())
+                elif i3 == i1-1 and i4 == i2:   # from up
+                    pathX.insert(0, "-")
+                    pathY.insert(0, sequence2[i1])
                 else:
                     print("Error: didn't find the last element.")
                 printAnswer(i3, i4, pathX.copy(), pathY.copy())
@@ -122,5 +122,5 @@ def printAnswer(i1, i2, pathX, pathY):
 
 pathX= []
 pathY= []
-printAnswer(len(sequence1)-1, len(sequence2)-1, pathX.copy(), pathY.copy())
+printAnswer(len(sequence2)-1, len(sequence1)-1, pathX.copy(), pathY.copy())
 i = 0
